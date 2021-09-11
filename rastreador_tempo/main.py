@@ -1,6 +1,9 @@
+import json
 import typer
 import sys
 import csv
+import pathlib
+from typing import Optional
 from datetime import datetime
 from time import sleep
 
@@ -8,7 +11,16 @@ app = typer.Typer()
 
 
 @app.command()
-def main(hourly_rate: float, activity: str):
+def main(hourly_rate: float, activity: str,
+         currency: Optional[str] = typer.Option("USD", "--currency"),
+         requested_from: Optional[str] = typer.Option(None, "--requested_from"),
+         bill_to: Optional[str] = typer.Option(None, "--bill_to"),
+         finish_report: Optional[bool] = typer.Option(False, "--finish_report")):
+    file_path = pathlib.Path.cwd() / "rastreador.json"
+    if file_path.is_file():
+        with open(file_path, mode='r+') as fid:
+            data = json.load(fid)
+
     start_time = datetime.now()
     print("Press CTRL+C to stop timer")
     while True:
@@ -23,12 +35,19 @@ def main(hourly_rate: float, activity: str):
         except KeyboardInterrupt:
             with open('report.csv', 'a+', newline='') as file:
                 fieldnames = ['activity', 'current_time', 'billed_time']
-                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction='ignore')
 
                 if file.tell() == 0:
                     writer.writeheader()
 
                 writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time})
+
+            if finish_report:
+                with open('report.csv', 'a+', newline='') as fd:
+                    writer = csv.writer(fd)
+                    writer.writerow(['currency', currency])
+                    writer.writerow(['requested_from', requested_from])
+                    writer.writerow(['bill_to', bill_to])
 
             print("\nGood job")
             sys.exit()
