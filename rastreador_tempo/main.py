@@ -20,11 +20,13 @@ def main(hourly_rate: float, activity: str):
                   f"- Billed time: ${round(billed_time, 2)}", end="", flush=True)
             print("\r", end="", flush=True)
         except KeyboardInterrupt:
-            with open('report.csv', 'w', newline='') as file:
+            with open('report.csv', 'a+', newline='') as file:
                 fieldnames = ['activity', 'current_time', 'billed_time']
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
 
-                writer.writeheader()
+                if file.tell() == 0:
+                    writer.writeheader()
+
                 writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time})
 
             print("\nBye")
