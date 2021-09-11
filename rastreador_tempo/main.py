@@ -10,6 +10,7 @@ app = typer.Typer()
 @app.command()
 def main(hourly_rate: float, activity: str):
     start_time = datetime.now()
+    print("Press CTRL+C to stop timer")
     while True:
         try:
             sleep(1)
@@ -29,7 +30,7 @@ def main(hourly_rate: float, activity: str):
 
                 writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time})
 
-            print("\nBye")
+            print("\nGood job")
             sys.exit()
 
 
