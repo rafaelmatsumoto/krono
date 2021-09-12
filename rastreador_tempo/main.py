@@ -58,7 +58,7 @@ def main(activity: str,
             if finish_report:
                 with open("report.csv", "r") as fi:
                     reader = csv.DictReader(fi)
-                    total = sum(float(row["billed_time"]) for row in reader)
+                    total = round(sum(float(row["billed_time"]) for row in reader), 2)
 
                 with open('report.csv', 'a+', newline='') as fd:
                     writer = csv.writer(fd)

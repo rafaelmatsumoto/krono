@@ -3,6 +3,10 @@ name = "rastreador-tempo"
 version = "0.1.0"
 description = ""
 authors = ["rafaelmatsumoto <rafaelmatsumoto43@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+rastreador-tempo = "rastreador_tempo.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.8"
