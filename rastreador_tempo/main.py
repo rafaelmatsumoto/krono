@@ -12,10 +12,12 @@ app = typer.Typer()
 
 @app.command()
 def main(hourly_rate: float, activity: str,
-         currency: Optional[str] = typer.Option("USD", "--currency"),
-         requested_from: Optional[str] = typer.Option(None, "--requested_from"),
-         bill_to: Optional[str] = typer.Option(None, "--bill_to"),
-         finish_report: Optional[bool] = typer.Option(False, "--finish_report")):
+         currency: Optional[str] = typer.Option("USD", "--currency", "-c", help="Currency used"),
+         requested_from: Optional[str] = typer.Option(None, "--requested_from", "-r",
+                                                      help="Developer/Company requesting payment"),
+         bill_to: Optional[str] = typer.Option(None, "--bill_to", "-b", help="Company to bill to"),
+         finish_report: Optional[bool] = typer.Option(False, "--finish_report", "-f",
+                                                      help="Add business metadata to the final version of the report")):
     file_path = pathlib.Path.cwd() / "rastreador.json"
     if file_path.is_file():
         with open(file_path, mode='r+') as fid:
@@ -43,11 +45,16 @@ def main(hourly_rate: float, activity: str,
                 writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time})
 
             if finish_report:
+                with open("report.csv", "r") as fi:
+                    reader = csv.DictReader(fi)
+                    total = sum(float(row["billed_time"]) for row in reader)
+
                 with open('report.csv', 'a+', newline='') as fd:
                     writer = csv.writer(fd)
                     writer.writerow(['currency', currency])
                     writer.writerow(['requested_from', requested_from])
                     writer.writerow(['bill_to', bill_to])
+                    writer.writerow(['total', total])
 
             print("\nGood job")
             sys.exit()
