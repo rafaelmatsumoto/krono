@@ -3,6 +3,7 @@ import typer
 import sys
 import csv
 import pathlib
+import pandas as pd
 from typing import Optional
 from datetime import datetime, date
 from time import sleep
@@ -41,19 +42,29 @@ def main(activity: str,
             sleep(1)
             current_time = datetime.now() - start_time
             billed_time = round(current_time.total_seconds() * (hourly_rate/3600), 2)
+            report_path = pathlib.Path.cwd() / "report.csv"
+            if report_path.is_file():
+                df = pd.read_csv(report_path.name)
+                df.index = pd.to_datetime(df['date'], format='%Y-%m-%d')
+                time_df = df.groupby(pd.Grouper(freq='M')).mean()
+                estimated_monthly_earnings = round(time_df["billed_time"].mean() * 30, 2)
+            else:
+                estimated_monthly_earnings = "N/A"
             print(f"Activity: {activity} "
                   f"- Current time tracked: {current_time} "
-                  f"- Billed time: ${billed_time}", end="", flush=True)
+                  f"- Billed time: ${billed_time}"
+                  f"- Estimated Monthly Earnings: ${estimated_monthly_earnings}", end="", flush=True)
             print("\r", end="", flush=True)
         except KeyboardInterrupt:
             with open('report.csv', 'a+', newline='') as file:
-                fieldnames = ['activity', 'current_time', 'billed_time']
+                fieldnames = ['activity', 'current_time', 'billed_time', 'date']
                 writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction='ignore')
 
                 if file.tell() == 0:
                     writer.writeheader()
 
-                writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time})
+                writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time,
+                                 'date': date.today()})
 
             if finish_report:
                 with open("report.csv", "r") as fi:
