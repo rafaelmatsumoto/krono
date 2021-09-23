@@ -21,11 +21,11 @@ def track(activity: str,
     if file_path.is_file():
         with open(file_path, mode='r+') as fid:
             data = json.load(fid)
-            if "hourly_rate" in data:
-                print("Hourly rate must be either provided by arguments or in configuration file.")
-                sys.exit()
 
             if hourly_rate is None:
+                if "hourly_rate" not in data:
+                    print("Hourly rate must be either provided by arguments or in configuration file.")
+                    sys.exit()
                 hourly_rate = data["hourly_rate"]
 
     start_time = datetime.now()
@@ -35,7 +35,7 @@ def track(activity: str,
             sleep(1)
             current_time = datetime.now() - start_time
             billed_time = round(current_time.total_seconds() * (hourly_rate/3600), 2)
-            report_path = pathlib.Path.cwd() / "report.csv"
+            report_path = pathlib.Path.cwd() / "database.csv"
             if report_path.is_file():
                 df = pd.read_csv(report_path.name)
                 df.index = pd.to_datetime(df['date'], format='%Y-%m-%d')
@@ -82,11 +82,27 @@ def report(starting_date: str = typer.Option(None, "--starting_date", "-s", help
             if bill_to is None:
                 bill_to = data["bill_to"]
 
-        with open("report.csv", "r") as fi:
+        now = datetime.now()
+        timestamp = datetime.timestamp(now)
+
+        report_path = pathlib.Path.cwd() / "database.csv"
+        if report_path.is_file():
+            df = pd.read_csv(report_path.name)
+            after_start_date = df["date"] >= starting_date
+            ending_date = ending_date if ending_date else now.strftime("%Y-%m-%d")
+            before_end_date = df["date"] <= ending_date
+            between_two_dates = after_start_date & before_end_date
+            filtered_report = df.loc[between_two_dates]
+            filtered_report.to_csv(f"report_{timestamp}.csv", index=False)
+        else:
+            print("No entries yet")
+            sys.exit()
+
+        with open(f"report_{timestamp}.csv", "r") as fi:
             reader = csv.DictReader(fi)
             total = round(sum(float(row["billed_time"]) for row in reader), 2)
 
-        with open('report.csv', 'a+', newline='') as fd:
+        with open(f"report_{timestamp}.csv", "a+", newline='') as fd:
             writer = csv.writer(fd)
             writer.writerow(['currency', currency])
             writer.writerow(['requested_from', requested_from])
