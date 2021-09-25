@@ -35,7 +35,7 @@ def track(activity: str,
             sleep(1)
             current_time = datetime.now() - start_time
             billed_time = round(current_time.total_seconds() * (hourly_rate/3600), 2)
-            report_path = pathlib.Path.cwd() / "database.csv"
+            report_path = pathlib.Path.cwd() / "rastreador_tempo_database.csv"
             if report_path.is_file():
                 df = pd.read_csv(report_path.name)
                 df.index = pd.to_datetime(df['date'], format='%Y-%m-%d')
@@ -49,7 +49,7 @@ def track(activity: str,
                   f"- Estimated Monthly Earnings: ${estimated_monthly_earnings}", end="", flush=True)
             print("\r", end="", flush=True)
         except KeyboardInterrupt:
-            with open('database.csv', 'a+', newline='') as file:
+            with open('rastreador_tempo_database.csv', 'a+', newline='') as file:
                 fieldnames = ['activity', 'current_time', 'billed_time', 'date']
                 writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction='ignore')
 
