@@ -111,6 +111,8 @@ def report(starting_date: str = typer.Option(None, "--starting_date", "-s", help
             writer.writerow(['date', date.today()])
             writer.writerow(['due_date', due_date])
 
+        print(f"Generated report: report_{timestamp}.csv")
+
 
 if __name__ == "__main__":
     app()
