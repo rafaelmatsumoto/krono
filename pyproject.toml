@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "rastreador-tempo"
-version = "0.1.0"
+name = "krono"
+version = "0.1.2"
 description = "Aplicativo de linha de comando para rastrear o tempo de trabalho"
 authors = ["rafaelmatsumoto <rafael.matsumoto43@catolicasc.edu.br>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-rastreador-tempo = "rastreador_tempo.main:app"
+krono = "krono.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.8"

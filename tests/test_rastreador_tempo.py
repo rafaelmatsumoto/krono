@@ -1,4 +1,4 @@
-from rastreador_tempo import __version__
+from krono import __version__
 
 
 def test_version():
