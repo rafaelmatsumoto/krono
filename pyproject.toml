@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "krono"
-version = "0.1.2"
+version = "0.1.5"
 description = "Aplicativo de linha de comando para rastrear o tempo de trabalho"
 authors = ["rafaelmatsumoto <rafael.matsumoto43@catolicasc.edu.br>"]
 readme = "README.md"
