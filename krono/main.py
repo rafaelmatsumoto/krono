@@ -60,7 +60,7 @@ def track(activity: str,
                 writer.writerow({'activity': activity, 'current_time': current_time, 'billed_time': billed_time,
                                  'date': date.today()})
 
-            print("\nGood job")
+            print("\nGood job!")
             sys.exit()
 
 
